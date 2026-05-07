@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GabahPintar — Prediksi & Rekomendasi Jual Gabah</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #C8962A;
+    --gold-light: #E8B84B;
+    --gold-pale: #FDF3DC;
+    --green: #2A6B3F;
+    --green-light: #3D8F57;
+    --green-pale: #EAF4EE;
+    --earth: #5C3D2E;
+    --cream: #FDFAF4;
+    --dark: #1A1208;
+    --gray: #6B6355;
+    --border: #E8E0CC;
+    --shadow: 0 4px 24px rgba(26,18,8,0.08);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--green);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+  }
+  .logo-icon {
+    font-size: 1.6rem;
+  }
+  .logo-text {
+    font-family: 'Lora', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .logo-sub {
+    font-size: 0.7rem;
+    opacity: 0.75;
+    font-weight: 300;
+    display: block;
+    margin-top: -3px;
+  }
+  .header-badge {
+    background: var(--gold);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 60%, #5AA86A 100%);
+    color: white;
+    padding: 3.5rem 2rem 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    opacity: 0.88;
+    max-width: 520px;
+    margin: 0 auto;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .hero-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    display: block;
+    animation: sway 4s ease-in-out infinite;
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* FORM CARD */
+  .form-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin: -2.5rem auto 2rem;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+  .form-card h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.25rem;
+    color: var(--green);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  input[type="date"], input[type="number"] {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--dark);
+    background: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(42,107,63,0.12);
+    background: white;
+  }
+  .field-hint {
+    font-size: 0.76rem;
+    color: #9B8E7E;
+  }
+
+  .btn-primary {
+    grid-column: 1 / -1;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 12px rgba(42,107,63,0.25);
+  }
+  .btn-primary:hover {
+    background: var(--green-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(42,107,63,0.3);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled {
+    background: #B8C9BE;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* SPINNER */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR */
+  .error-box {
+    background: #FEF0F0;
+    border: 1px solid #FCCACA;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: #C0392B;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    display: none;
+  }
+
+  /* RESULTS SECTION */
+  .results-section {
+    display: none;
+    animation: fadeUp 0.5s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RECOMMENDATION CARD */
+  .rec-card {
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .rec-card.positive {
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+    color: white;
+  }
+  .rec-card.neutral {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: white;
+  }
+  .rec-card::after {
+    content: attr(data-icon);
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 5rem;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .rec-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.82;
+    margin-bottom: 0.5rem;
+  }
+  .rec-title {
+    font-family: 'Lora', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .rec-sub {
+    font-size: 0.92rem;
+    opacity: 0.85;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+  .rec-stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .rec-stat {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+  }
+  .rec-stat-val {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .rec-stat-lbl {
+    font-size: 0.73rem;
+    opacity: 0.8;
+    margin-top: 1px;
+  }
+
+  /* COMPARE CARDS */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 560px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+  .compare-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .compare-card.best {
+    border-color: var(--green);
+    background: var(--green-pale);
+  }
+  .compare-card .cc-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .compare-card.best .cc-label { color: var(--green); }
+  .compare-card .cc-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    font-family: 'Lora', serif;
+  }
+  .compare-card .cc-net {
+    font-size: 0.88rem;
+    color: var(--gray);
+    margin-top: 0.3rem;
+  }
+  .compare-card.best .cc-net { color: var(--green); font-weight: 500; }
+
+  /* CHART SECTION */
+  .chart-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+  }
+  .chart-card h3 {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    color: var(--dark);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .chart-wrap { position: relative; height: 260px; }
+
+  /* TABLE */
+  .table-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .table-card h3 {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    color: var(--dark);
+    margin-bottom: 1.25rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  thead th {
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray);
+    border-bottom: 1.5px solid var(--border);
+  }
+  tbody tr {
+    border-bottom: 1px solid #F0EBE0;
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: var(--gold-pale); }
+  tbody tr.best-row {
+    background: var(--green-pale);
+    font-weight: 500;
+  }
+  tbody tr.best-row td { color: var(--green); }
+  td {
+    padding: 0.65rem 0.75rem;
+    color: var(--dark);
+  }
+  .badge {
+    background: var(--green);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: 0.4rem;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.8rem;
+  }
+  footer strong { color: rgba(255,255,255,0.8); }
+
+  /* URL CONFIG */
+  .config-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+  .config-row .field { flex: 1; }
+  .config-row input { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">
+    <span class="logo-icon">🌾</span>
+    <span>
+      <span class="logo-text">GabahPintar</span>
+      <span class="logo-sub">Prediksi Harga & Rekomendasi Jual</span>
+    </span>
+  </a>
+  <span class="header-badge">BETA</span>
+</header>
+
+<div class="hero">
+  <span class="hero-icon">🌾</span>
+  <h1>Kapan Waktu Terbaik<br>untuk Menjual Gabahmu?</h1>
+  <p>Masukkan tanggal panen dan kapasitas produksi. Kami akan prediksi harga gabah dan rekomendasikan waktu jual optimal.</p>
+</div>
+
+<div class="container">
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <h2>📋 Data Panen Kamu</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>Tanggal Panen</label>
+        <input type="date" id="harvest_date" />
+        <span class="field-hint">Perkiraan atau rencana tanggal panen</span>
+      </div>
+      <div class="field">
+        <label>Kapasitas Produksi (kg)</label>
+        <input type="number" id="capacity_kg" placeholder="cth: 5000" min="1" />
+        <span class="field-hint">Total gabah yang akan dipanen</span>
+      </div>
+      <div class="config-row">
+        <div class="field">
+          <label>URL Backend (Railway)</label>
+          <input type="text" id="api_url" placeholder="https://xxx.up.railway.app" style="font-size:0.85rem" />
+        </div>
+      </div>
+      <button class="btn-primary" id="submit-btn" onclick="submitForm()">
+        <div class="spinner" id="spinner"></div>
+        <span id="btn-text">🔮 Analisis & Rekomendasikan</span>
+      </button>
+    </div>
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="results">
+
+    <!-- BIG REC CARD -->
+    <div class="rec-card" id="rec-card" data-icon="🌾">
+      <div class="rec-label">✅ Rekomendasi Waktu Jual</div>
+      <div class="rec-title" id="rec-title">—</div>
+      <div class="rec-sub" id="rec-sub">—</div>
+      <div class="rec-stats">
+        <div class="rec-stat">
+          <div class="rec-stat-val" id="rec-price">—</div>
+          <div class="rec-stat-lbl">Harga Prediksi/kg</div>
+        </div>
+        <div class="rec-stat">
+          <div class="rec-stat-val" id="rec-net">—</div>
+          <div class="rec-stat-lbl">Net Revenue</div>
+        </div>
+        <div class="rec-stat">
+          <div class="rec-stat-val" id="rec-storage">—</div>
+          <div class="rec-stat-lbl">Biaya Simpan</div>
+        </div>
+        <div class="rec-stat">
+          <div class="rec-stat-val" id="rec-gain">—</div>
+          <div class="rec-stat-lbl">vs Jual Langsung</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARE -->
+    <div class="compare-grid">
+      <div class="compare-card" id="cc-immediate">
+        <div class="cc-label">⚡ Jual Langsung Saat Panen</div>
+        <div class="cc-price" id="imm-price">—</div>
+        <div class="cc-net" id="imm-net">—</div>
+      </div>
+      <div class="compare-card best" id="cc-best">
+        <div class="cc-label">⭐ Waktu Optimal (Rekomendasi)</div>
+        <div class="cc-price" id="best-price">—</div>
+        <div class="cc-net" id="best-net">—</div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-card">
+      <h3>📈 Prediksi Harga vs Net Revenue per Minggu</h3>
+      <div class="chart-wrap">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <h3>🗓️ Rincian per Minggu</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Minggu</th>
+            <th>Tanggal</th>
+            <th>Harga/kg</th>
+            <th>Biaya Simpan</th>
+            <th>Net Revenue</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <strong>GabahPintar</strong> · Didukung model prediksi Facebook Prophet · Data historis BPS<br>
+  Biaya penyimpanan: Rp 60/kg/minggu · Harga bersifat prediksi, bukan jaminan
+</footer>
+
+<script>
+let chartInstance = null;
+
+// Set default date to today
+document.getElementById('harvest_date').valueAsDate = new Date();
+
+// Load saved API URL
+const savedUrl = localStorage.getItem('gabahpintar_api_url');
+if (savedUrl) document.getElementById('api_url').value = savedUrl;
+
+function formatRp(val) {
+  return 'Rp ' + Math.round(val).toLocaleString('id-ID');
+}
+
+function setLoading(on) {
+  const btn = document.getElementById('submit-btn');
+  const spinner = document.getElementById('spinner');
+  const text = document.getElementById('btn-text');
+  btn.disabled = on;
+  spinner.style.display = on ? 'block' : 'none';
+  text.textContent = on ? 'Sedang menganalisis...' : '🔮 Analisis & Rekomendasikan';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+
+async function submitForm() {
+  hideError();
+  const harvest_date = document.getElementById('harvest_date').value;
+  const capacity_kg = parseFloat(document.getElementById('capacity_kg').value);
+  const api_url = document.getElementById('api_url').value.trim().replace(/\/$/, '');
+
+  if (!harvest_date) return showError('Masukkan tanggal panen terlebih dahulu.');
+  if (!capacity_kg || capacity_kg <= 0) return showError('Masukkan kapasitas produksi yang valid (kg).');
+  if (!api_url) return showError('Masukkan URL backend Railway terlebih dahulu.');
+
+  localStorage.setItem('gabahpintar_api_url', api_url);
+  setLoading(true);
+
+  try {
+    const res = await fetch(`${api_url}/recommend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ harvest_date, capacity_kg, weeks_ahead: 26 })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Error ${res.status}`);
+    }
+    const data = await res.json();
+    renderResults(data);
+  } catch (e) {
+    showError('Gagal menghubungi backend: ' + e.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderResults(data) {
+  const rec = data.recommendation;
+  const imm = data.immediate_sell;
+  const weeks = data.weekly_breakdown;
+
+  // REC CARD
+  const isPositive = rec.vs_immediate_sell >= 0;
+  const card = document.getElementById('rec-card');
+  card.className = 'rec-card ' + (isPositive ? 'positive' : 'neutral');
+
+  const recDate = new Date(rec.sell_date).toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('rec-title').textContent = recDate;
+
+  const waitText = rec.weeks_to_wait === 0
+    ? 'Jual langsung saat panen adalah pilihan terbaik'
+    : `Simpan ${rec.weeks_to_wait} minggu setelah panen untuk hasil optimal`;
+  document.getElementById('rec-sub').textContent = waitText;
+
+  document.getElementById('rec-price').textContent = formatRp(rec.predicted_price_per_kg) + '/kg';
+  document.getElementById('rec-net').textContent = formatRp(rec.net_revenue);
+  document.getElementById('rec-storage').textContent = formatRp(rec.storage_cost_total);
+  const gainVal = rec.vs_immediate_sell;
+  document.getElementById('rec-gain').textContent = (gainVal >= 0 ? '+' : '') + formatRp(gainVal);
+
+  // COMPARE CARDS
+  document.getElementById('imm-price').textContent = formatRp(imm.predicted_price_per_kg) + '/kg';
+  document.getElementById('imm-net').textContent = 'Net Revenue: ' + formatRp(imm.net_revenue);
+  document.getElementById('best-price').textContent = formatRp(rec.predicted_price_per_kg) + '/kg';
+  document.getElementById('best-net').textContent = 'Net Revenue: ' + formatRp(rec.net_revenue);
+
+  // CHART
+  const labels = weeks.map(w => `M+${w.week}`);
+  const prices = weeks.map(w => w.predicted_price_per_kg);
+  const nets = weeks.map(w => w.net_revenue / 1000000); // Juta
+
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  chartInstance = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Harga Prediksi (Rp/kg)',
+          data: prices,
+          borderColor: '#C8962A',
+          backgroundColor: 'rgba(200,150,42,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 2,
+          tension: 0.4,
+          yAxisID: 'y',
+          fill: true,
+        },
+        {
+          type: 'bar',
+          label: 'Net Revenue (Juta Rp)',
+          data: nets,
+          backgroundColor: weeks.map(w => w.week === rec.weeks_to_wait ? '#2A6B3F' : 'rgba(42,107,63,0.2)'),
+          borderRadius: 4,
+          yAxisID: 'y2',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { font: { family: 'DM Sans' }, boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              if (ctx.datasetIndex === 0) return ` Rp ${ctx.parsed.y.toLocaleString('id-ID')}/kg`;
+              return ` Rp ${ctx.parsed.y.toFixed(1)} juta`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear', position: 'left',
+          ticks: { callback: v => 'Rp' + (v/1000).toFixed(0)+'rb', font: { size: 10 } },
+          grid: { color: '#F0EBE0' }
+        },
+        y2: {
+          type: 'linear', position: 'right',
+          ticks: { callback: v => v.toFixed(0)+'jt', font: { size: 10 } },
+          grid: { drawOnChartArea: false }
+        },
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+
+  // TABLE
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  weeks.forEach(w => {
+    const isBest = w.week === rec.weeks_to_wait;
+    const tr = document.createElement('tr');
+    if (isBest) tr.className = 'best-row';
+    tr.innerHTML = `
+      <td>M+${w.week}${isBest ? '<span class="badge">OPTIMAL</span>' : ''}</td>
+      <td>${new Date(w.date).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}</td>
+      <td>${formatRp(w.predicted_price_per_kg)}</td>
+      <td>${formatRp(w.storage_cost_total)}</td>
+      <td>${formatRp(w.net_revenue)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+
+</body>
+</html>
